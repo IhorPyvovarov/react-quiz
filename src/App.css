@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.main {
+    @apply bg-gradient-to-r from-green-100 via-indigo-100 to-green-100 relative min-h-screen;
+}
+
 .custom-slick-slider {
     @apply flex items-center justify-center sm:w-3/4 min-h-screen overflow-x-hidden mx-auto;
 }

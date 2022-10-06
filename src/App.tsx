@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 // @ts-ignore
 import Slider from 'react-slick'
 
-import {Button, Card} from './Components'
+import {Button, Card, Spinner} from './Components'
 import {db, getQuiz} from './Firebase/quizBase'
 
 import "slick-carousel/slick/slick.css";
@@ -22,6 +22,7 @@ type DataType = {
 
 function App() {
   const [score, setScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(true)
   const [quizData, setQuizData] = useState<DataType>({})
   const slickRef: React.RefObject<Slider> = useRef()
 
@@ -58,40 +59,45 @@ function App() {
   }
 
   useEffect(() => {
-    getQuiz(db, 'JavaScript').then(res => setQuizData(res[0]))
-    
-    // Wait untill slick slider init to prevent element jumping
-    setTimeout(() => {
-      const main = document.querySelector('.opacity-0') as HTMLElement
-      main && main.classList.replace('opacity-0', 'opacity-1')
-    }, 1000) 
+    getQuiz(db, 'JavaScript').then(res => {
+      setQuizData(res[0])
+      setIsLoading(false)
+    })
   }, [])
+
+  useEffect(() => {
+    const main = document.querySelector('.opacity-0') as HTMLElement
+    main && main.classList.replace('opacity-0', 'opacity-1')
+  }, [isLoading])
+
+  const slider = 
+    <Slider ref={slickRef}  {...slickSettings}>
+      {Object.keys(quizData).map((id: string) => {
+          const {question, answer1, answer2, answer3, answer4} = quizData[id]
+          return (
+            <Card key={id} questionID={id}>
+              <h2 className='font-bold text-center text-2xl mb-3'>{question}</h2>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer1} />
+                <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer2} />
+                <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer3} />
+                <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer4} />
+              </div>
+            </Card>
+          )
+        })
+      }
+      <Card>
+        <h2 className='font-bold text-center text-2xl mb-3'>Your total score</h2>
+        <p className='font-bold text-center text-xl'>
+          <span className='text-green-500'>{score} correct answer</span><span className='color-grey-500'> from {Object.keys(quizData).length}</span>
+        </p>
+      </Card>
+    </Slider>
   
   return (
-    <main className="bg-gradient-to-r from-green-100 via-indigo-100 to-green-100">
-      <Slider ref={slickRef}  {...slickSettings}>
-        {Object.keys(quizData).map((id: string) => {
-            const {question, answer1, answer2, answer3, answer4} = quizData[id]
-            return (
-              <Card key={id} questionID={id}>
-                <h2 className='font-bold text-center text-2xl mb-3'>{question}</h2>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-                  <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer1} />
-                  <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer2} />
-                  <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer3} />
-                  <Button onClickHandler={(e) => clickAnswerHandler(e)} text={answer4} />
-                </div>
-              </Card>
-            )
-          })
-        }
-        <Card>
-          <h2 className='font-bold text-center text-2xl mb-3'>Your total score</h2>
-          <p className='font-bold text-center text-xl'>
-            <span className='text-green-500'>{score} correct answer</span><span className='color-grey-500'> from {Object.keys(quizData).length}</span>
-          </p>
-        </Card>
-      </Slider>
+    <main className="main">
+      {isLoading ? <Spinner/> : slider}
     </main>
   );
 }
