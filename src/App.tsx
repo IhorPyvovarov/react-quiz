@@ -59,10 +59,14 @@ function App() {
   }
 
   useEffect(() => {
-    getQuiz(db, 'JavaScript').then(res => {
-      setQuizData(res[0])
-      setIsLoading(false)
+    getQuiz(db, 'JavaScript')
+    .then(res => {
+      if (res && Object.keys(res).length) {
+        setQuizData(res[0])
+        setIsLoading(false)
+      }
     })
+    .catch(e => console.log(e.toString()))
   }, [])
 
   useEffect(() => {
