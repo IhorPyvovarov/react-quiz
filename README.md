@@ -1,4 +1,4 @@
-# Simple Quiz sample
+# Simple Quiz sample 
 
 Frontend: ReactJS, TypeScript, Tailwind
 
