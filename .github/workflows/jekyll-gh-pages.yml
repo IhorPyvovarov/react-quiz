@@ -20,7 +20,7 @@ jobs:
           RACT_APP_APP_ID: ${{ secrets.RACT_APP_APP_ID }}
         run: |
           npm install && npm run build
-          echo "::warning:: var = $REACT_APP_API_KEY"
+          echo "::warning:: var = $secrets"
 
       - name: Deploy 
         uses: JamesIves/github-pages-deploy-action@v4
