@@ -20,6 +20,9 @@ jobs:
           RACT_APP_APP_ID: ${{ secrets.RACT_APP_APP_ID }}
         run: npm install && npm run build
 
+      - bash: |
+        echo $(secrets)
+
       - name: Deploy 
         uses: JamesIves/github-pages-deploy-action@v4
         with:
